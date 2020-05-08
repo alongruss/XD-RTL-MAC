@@ -1,0 +1,372 @@
+/*
+TODO:
+load and parse existing style buffer as markup... seems hard for intermixed styles
+make it work in repeat grids... how?
+
+
+ * 
+ */
+
+const { alert, error } = require("./libs/dialogs.js");
+const { Text, Color } = require("scenegraph");
+
+
+// Define text input modal
+
+// only if selection is a Text object
+
+// Show modal with text selection as value
+
+// apply new text to object
+
+function openBypass(selection) {
+
+    // exit if the selection hold more then one object
+    if (selection.items.length > 1) {
+        error("Multiple objects selected...",
+            "Be sure to select only one text item.");
+        return;
+    }
+
+    // Create a textNode reference
+    let newTextNode;
+
+    if ((selection.items.length < 1) || (!(selection.items[0] instanceof Text))) {
+        // style a new text node
+        newTextNode = new Text();
+        newTextNode.fontSize = 24;
+        newTextNode.fill = new Color("#000000");
+        // add the new text node to the parent   
+        selection.insertionParent.addChild(newTextNode);
+        newTextNode.moveInParentCoordinates(20, 50);
+        selection.items = [newTextNode];
+    }
+
+    let styleRanges = selection.items[0].styleRanges;
+
+    function onInput() {
+        updateDialog();
+        generateText();
+    }
+
+    function onsubmit() {
+
+    }
+
+    function updateDialog() {
+        renderStyledText();
+    }
+
+    function styleRangeToHtml(text, styleRange, startIndex) {
+        let releventText = text.substr(startIndex, styleRange.length);
+        return `
+            <div style="
+                font-size: ${styleRange.fontSize}px;
+                text-decoration: ${styleRange.underline?"underline":"none"} ${styleRange.strikethrough?"line-through":"none"};
+                color:${styleRange.fill};
+            ">${releventText}
+            </div>
+        `;
+
+        //font-size:${styleRange.fontSize}; font-style:${styleRange.fontStyle}; 
+    }
+
+
+    function renderStyledText() {
+        let text = document.getElementById("textInput").getAttribute("value");
+        let renderHtml = "";
+        let startIndex = 0;
+        // build styled text from text value and styleRanges
+        for (let i = 0; i < styleRanges.length; i++) {
+            if (i > 0) startIndex = styleRanges[i - 1].length;
+            renderHtml += styleRangeToHtml(text, styleRanges[i], startIndex);
+        }
+        document.getElementById("textPreview").innerHTML = renderHtml;
+    }
+
+
+
+    function generateText() {
+
+
+        // traverse newTextNode.value and find markups
+        // let italicPattern = /_([^_]*)_/g;
+        // let boldPattern = /\*([^\*]*)\*/g;
+        //let strikethroughPattern = /\~([^\~]*)\~/g;
+        // let monospacePattern = /\`\`\`([^\`\`\`]*)\`\`\`/g;
+
+        let inputText = document.getElementById("textInput").getAttribute("value");
+
+        let italicOpen = false;
+        let boldOpen = false;
+        let styleBuffer = {};
+        let textBuffer = "";
+
+        function resetStyleBuffer() {
+            styleBuffer = {
+                length: 0,
+                //fontFamily: string,
+                fontStyle: "Regular",
+                //fontSize: number,
+                //fill: !Color,
+                //charSpacing: number,
+                //underline: boolean,
+                //strikethrough: boolean,
+                //textTransform: string,
+                //textScript: string
+            }
+        }
+
+        resetStyleBuffer();
+
+        for (let i = 0; i < inputText.length; i++) {
+            switch (inputText[i]) {
+                case '_':
+                    if (italicOpen) {
+                        // we push the buffer
+                        //styleRanges.push(styleBuffer);
+                        // and then clear it
+                        resetStyleBuffer();
+                        italicOpen = false;
+                    } else {
+                        if (inputText[i] == "_") {
+                            //styleRanges.push(styleBuffer);
+                            // and then clear it
+                            resetStyleBuffer();
+                            // make it italic
+                            styleBuffer.fontStyle = "Italic";
+                            italicOpen = true;
+                        }
+                    }
+                    break;
+                case '*':
+                    if (boldOpen) {
+                        // we push the buffer
+                        //styleRanges.push(styleBuffer);
+                        // and then clear it
+                        resetStyleBuffer();
+                        boldOpen = false;
+                    } else {
+                        if (inputText[i] == "*") {
+                            //styleRanges.push(styleBuffer);
+                            // and then clear it
+                            resetStyleBuffer();
+                            // make it italic
+                            styleBuffer.fontStyle = "Bold";
+                            boldOpen = true;
+                        }
+                    }
+                    break;
+                default:
+                    textBuffer += inputText[i];
+                    styleBuffer.length++;
+            }
+        }
+        //styleRanges.push(styleBuffer);
+
+        /*let italicResult = italicPattern.exec(inputText);
+        if (italicResult!=null){
+            italicResult.forEach(function (found)  {
+                console.log(found);
+                console.log(found[0]);
+                console.log(found.length);
+                console.log('---');
+                styleRanges.push({
+                    length: found[0].length,
+                    //fontFamily: string,
+                    //fontStyle: string,
+                    //fontSize: number,
+                    //fill: !Color,
+                    //charSpacing: number,
+                    //underline: boolean,
+                    //strikethrough: boolean,
+                    //textTransform: string,
+                    //textScript: string
+                });
+            });
+        }
+        console.log(italicResult);
+
+        let boldResult = inputText.match(boldPattern);
+        console.log(boldResult);
+
+        let strikethroughResult = inputText.match(strikethroughPattern);
+        console.log(strikethroughResult);
+
+        let monospaceResult = inputText.match(monospacePattern);
+        console.log(monospaceResult);*/
+
+        /*styleRange = {
+            length: number,
+            fontFamily: string,
+            fontStyle: string,
+            fontSize: number,
+            fill: !Color,
+            charSpacing: number,
+            underline: boolean,
+            strikethrough: boolean,
+            textTransform: string,
+            textScript: string
+        };*/
+        /**
+         * Using the Whatsapp markup
+         * 
+         * Italic - To italicize your message, place an underscore on both sides of the text:
+         * _text_
+         * 
+         * Bold - To bold your message, place an asterisk on both sides of the text:
+         * *text*
+         * 
+         * Strikethrough - To strikethrough your message, place a tilde on both sides of the text:
+         * ~text~
+         * 
+         * Monospace - To monospace your message, place three backticks on both sides of the text:
+         * ```text```
+         */
+
+        // seperate it to array of styles
+        /**
+         * node.styleRanges = textData.map(item => ({              // [3]
+                length: item.text.length,
+                fill: new Color(item.color)
+            }));
+        */
+        selection.items[0].text = textBuffer;
+        selection.items[0].styleRanges = styleRanges;
+        //repeatGrid.attachTextDataSeries(selection.items[0], [newTextNode.value])
+        //
+    }
+
+    const style = `
+    <style>
+        .row {
+            align-items: center;
+        }
+
+        dialog {
+            width: 400px;
+        }
+
+        #textInput{
+            width: 300;
+            height: 150;
+        }
+
+        #textPreview{
+            width: 300;
+            height: 150;
+        }
+    </style>`;
+
+    const dialogHtml = `
+        <form id="form" method="dialog">
+            <h1>
+                RTL Text (Mac) by Uri Peleg and Alon Gruss
+            </h1>
+            <hr>
+            <div class="row">
+                <label>
+                    <span>
+                        Edit your text here
+                    </span>
+                    <textarea id="textInput" style="font-size:56px">${selection.items[0].text}</textarea>
+                </label>
+                <span id="textStyles"></span>
+            </div>
+            <div class="row">
+                <button uxp-variant="action">
+                    <b>B</b>
+                </button>
+                <button uxp-variant="action">
+                    <i>I</i>
+                </button>
+                <label>
+                <span>
+                    Font family
+                </span>
+                <select>
+                    <option value="100">
+                        Thin
+                    </option>
+                    <option value="300">
+                        Semi Thin
+                    </option>
+                    <option value="400">
+                        Regular
+                    </option>
+                    <option value="500">
+                        Semi Bold
+                    </option>
+                    <option value="700">
+                        Bold
+                    </option>
+                    <option value="900">
+                        Black
+                    </option>
+                </select>
+            </label>
+            </div>
+            <label>
+                <span>
+                    Preview your text here
+                </span>
+                <div class="row" id="textPreview"></div>
+            </label>
+            <footer>
+            <button id="closeButton" uxp-variant="cta" type="submit">Close</button>
+            </footer>
+        </form>
+        `;
+
+    document.body.innerHTML = style;
+    let dialog = document.createElement("dialog");
+    dialog.innerHTML = dialogHtml;
+    document.body.appendChild(dialog);
+
+    // add event listeners
+
+    document.getElementById("textInput").addEventListener("input", function (e) {
+        onInput();
+        e.preventDefault;
+    }, true);
+    document.getElementById("closeButton").addEventListener("click", function (e) {
+        onsubmit();
+        dialog.close();
+        e.preventDefault;
+    }, true);
+
+    document.getElementById("form").addEventListener("submit", function (e) {
+        onsubmit();
+        dialog.close();
+        e.preventDefault;
+    }, true);
+
+    /*\ function getSelectionText() {
+         var text = "";
+         var activeEl = document.activeElement;
+         var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
+         if (
+             (activeElTagName == "textarea") || (activeElTagName == "input" &&
+                 /^(?:text|search|password|tel|url)$/i.test(activeEl.type)) &&
+             (typeof activeEl.selectionStart == "number")
+         ) {
+             text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
+         } else if (window.getSelection) {
+             text = window.getSelection().toString();
+         }
+         return text;
+     }*/
+
+    /*document.onmouseup = document.onkeyup = document.onselectionchange = function () {
+        document.getElementById("sel").value = getSelectionText();
+    };*/
+
+    return dialog.showModal();
+}
+
+
+module.exports = {
+    commands: {
+        bypassTextInput: openBypass
+    }
+};

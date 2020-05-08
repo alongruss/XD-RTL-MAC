@@ -1,0 +1,106 @@
+html body form {
+  width: 100%;
+}
+
+html body form label textarea {
+  width: 100%;
+  direction: rtl;
+  text-align: start;
+}
+
+html body form .button-container {
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+}
+
+html body form .button-container .number-input {
+  position: relative;
+  width: 68px;
+  height: 32px;
+  margin: 2px;
+  padding: 0px;
+  z-index: 2;
+  text-align: end;
+  background-color: white;
+}
+
+html body form .button-container .button-block {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  margin: 2px;
+  z-index: 2;
+  border: 1px solid #888888;
+  border-radius: 4px;
+  text-align: center;
+  background-color: white;
+}
+
+html body form .button-container .button-block:before {
+  position: absolute;
+  top: 2px;
+  left: 1px;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  border-radius: 4px;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+html body form .button-container .selected {
+  border: 3px solid #ff66ff;
+}
+
+html body form .color-container {
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+}
+
+html body form .color-container .color-block {
+  width: 32px;
+  height: 32px;
+  margin: 2px;
+  border: 1px solid #888888;
+  border-radius: 4px;
+}
+
+html body form .color-container .selected {
+  border: 3px solid #ff66ff;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.underline {
+  text-decoration: underline;
+}
+/*# sourceMappingURL=App.css.map */
